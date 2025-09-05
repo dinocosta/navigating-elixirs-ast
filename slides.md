@@ -4,6 +4,7 @@ theme: default
 # like them? see https://unsplash.com/collections/94734566/slidev
 # background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
+lineNumbers: true
 title: Welcome to Slidev
 info: |
   ## Slidev Starter Template
@@ -27,7 +28,12 @@ seoMeta:
   ogImage: auto
   # ogImage: https://cover.sli.dev
 fonts:
-  mono: JetBrains Mono
+  serif: Merriweather
+  sans-serif: Inter
+  mono: 'Berkeley Mono, JetBrains Mono'
+  # Since Berkeley Mono is not available on Google Fonts, we have to specify it
+  # is a local font instead.
+  local: Berkeley Mono
 ---
 
 # Navigating Elixir's AST
@@ -70,20 +76,45 @@ You can have `style` tag in markdown to override the style for the current page.
 Learn more: https://sli.dev/features/slide-scope-style
 -->
 
-<style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
-}
-</style>
-
 <!--
 Here is another comment.
+-->
+
+---
+image: https://cover.sli.dev
+---
+
+# What is an AST?
+
+```elixir {all|1,5,7-10,16-18|2,4,11-13,15|3,14|all}
+defmodule Example do
+  def add(x, y) do
+    x + y
+  end
+end
+
+{:defmodule, [line: 1],
+  [
+    {:__aliases__, [line: 1], [:Example]},
+    [
+      do: {:def, [line: 2],
+       [
+         {:add, [line: 2], [{:x, [line: 2], nil}, {:y, [line: 2], nil}]},
+         [do: {:+, [line: 2], [{:x, [line: 2], nil}, {:y, [line: 2], nil}]}]
+       ]}
+    ]
+  ]
+}
+```
+
+<!--
+Notes can also sync with clicks
+
+[click] This will be highlighted after the first click
+
+[click] Highlighted with `count = ref(0)`
+
+[click:3] Last click (skip two clicks)
 -->
 
 ---
