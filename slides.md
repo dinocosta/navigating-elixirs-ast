@@ -4,21 +4,18 @@ theme: default
 # like them? see https://unsplash.com/collections/94734566/slidev
 # background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
-lineNumbers: true
 title: Welcome to Slidev
 info: |
   ## Slidev Starter Template
   Presentation slides for developers.
 
   Learn more at [Sli.dev](https://sli.dev)
-layout: center
 # apply unocss classes to the current slide
 class: text-center neversink-red-scheme
 # https://sli.dev/features/drawing
 drawings:
   persist: false
-# slide transition: https://sli.dev/guide/animations.html#slide-transitions
-transition: slide-left
+transition: fade-out
 # enable MDC Syntax: https://sli.dev/features/mdc
 mdc: true
 # open graph
@@ -28,121 +25,419 @@ seoMeta:
   ogImage: auto
   # ogImage: https://cover.sli.dev
 fonts:
-  serif: Merriweather
-  sans-serif: Inter
-  mono: 'Berkeley Mono, JetBrains Mono'
-  # Since Berkeley Mono is not available on Google Fonts, we have to specify it
-  # is a local font instead.
-  local: Berkeley Mono
+  sans-serif: 'Geist'
+  mono: 'Geist Mono'
 ---
 
 # Navigating Elixir's AST
 
-Credo and Sourceror's Building Blocks
+## Credo and Sourceror's Building Blocks
 
-<div class="abs-br m-6 text-xl">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="slidev-icon-btn">
-    <carbon:edit />
-  </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" class="slidev-icon-btn">
-    <carbon:logo-github />
-  </a>
+---
+layout: section
+---
+
+# What is an AST?
+
+<div class="flex flex-col">
+  <span v-click>Tree-Like Data Structure</span>
+  <span v-click>Represents the code's syntatic structure</span>
+  <span v-click>Each node can represent an operation, expression or statement</span>
 </div>
 
 <!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
+- The representation abstracts away specific syntax details, like punctutation or formatting
+- Provides a structure that makes it easier to analyze and manipulate code programmatically
+- Helpful in compilting, interpreting and static code analysis
 -->
 
 ---
-transition: fade-out
-image: diagram.png
-layout: image-right
-backgroundSize: contain
+layout: two-cols
+layoutClass: gap-4
 ---
 
-# What is an AST?
-
-- Abstract representation of a program's structure
-- Used by Elixir's compiler to analyze and transform code
-
-```elixir
-def add(x, y) do
-  x + y
-end
-```
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/features/slide-scope-style
--->
-
-<!--
-Here is another comment.
--->
-
----
-image: https://cover.sli.dev
----
-
-# What is an AST?
-
-```elixir {all|1,5,7-10,16-18|2,4,11-13,15|3,14|all}
+```elixir {all|1,5|1,5|2,4|2,4|2,4|3|3|all}{at:1}
 defmodule Example do
   def add(x, y) do
     x + y
   end
 end
+```
 
+::right::
+
+````md magic-move {lines:false}
+```elixir
+@type ast :: node
+@type node :: {atom, [node]}
+```
+```elixir
+@type ast :: node
+@type node :: {atom, [node]}
+
+{:defmodule, []}
+```
+```elixir
+@type ast :: node
+@type node :: {atom, [node]}
+
+{:defmodule, [
+  {:Example, []}
+]}
+```
+```elixir
+@type ast :: node
+@type node :: {atom, [node]}
+
+{:defmodule, [
+  {:Example, []},
+  {:def, []}
+]}
+```
+```elixir
+@type ast :: node
+@type node :: {atom, [node]}
+
+{:defmodule, [
+  {:Example, []},
+  {:def, [
+    {:add, []}
+  ]}
+]}
+```
+```elixir
+@type ast :: node
+@type node :: {atom, [node]}
+
+{:defmodule, [
+  {:Example, []},
+  {:def, [
+    {:add, [
+      {:x, []}
+      {:y, []}
+    ]}
+  ]}
+]}
+```
+```elixir
+@type ast :: node
+@type node :: {atom, [node]}
+
+{:defmodule, [
+  {:Example, []},
+  {:def, [
+    {:add, [
+      {:x, []}
+      {:y, []}
+    ]},
+    {:+, []}
+  ]}
+]}
+```
+```elixir
+@type ast :: node
+@type node :: {atom, [node]}
+
+{:defmodule, [
+  {:Example, []},
+  {:def, [
+    {:add, [
+      {:x, []}
+      {:y, []}
+    ]},
+    {:+, [
+      {:x, []},
+      {:y, []}
+    ]}
+  ]}
+]}
+```
+````
+
+<!--
+- Take this piece of Elixir code as an example
+- Provides a structure that makes it easier to analyze and manipulate code programmatically
+- Helpful in compilting, interpreting and static code analysis
+-->
+
+---
+layout: section
+---
+
+# Elixir's AST
+
+<div class="flex flex-col">
+  <span class="flex gap-4 justify-center">
+    <code v-click class="color-blue-600">Code</code>
+    <code v-click class="color-blue-600">Macro</code>
+  </span>
+</div>
+
+---
+layout: default
+---
+
+# Elixir's AST
+
+<div>
+<p><code class="color-blue-600">Code</code></p>
+<ul>
+    <li v-click><code>Code.string_to_quoted/1</code> → String to AST</li>
+    <li v-click><code>Code.eval_string/1</code> → Execute Elixir code</li>
+    <li v-click><code>Code.eval_quoted/1</code> → Execute AST</li>
+</ul>
+<p v-click><code class="color-blue-600">Macro</code></p>
+<ul>
+    <li v-click><code>Macro.to_string/1</code> → AST to String</li>
+    <li v-click><code>Macro.prewalk/2</code> → Traverse AST</li>
+</ul>
+</div>
+
+<!--
+- Elixir's standard library provides multiple functions in both the `Macro` and
+`Code` modules that make it easier to work with Elixir's AST.
+-->
+
+---
+layout: two-cols-header
+layoutClass: gap-4
+---
+
+# `Code.string_to_quoted/1`
+
+::left::
+
+```elixir {all|2,6|3,5|4}{at:1}
+Code.string_to_quoted!("""
+defmodule Example do
+  def add(x, y) do
+    x + y
+  end
+end
+""")
+```
+
+::right::
+
+```elixir {all|1-4,20-22|5-12,18-19|13-16}{at:1}
 {:defmodule, [line: 1],
   [
     {:__aliases__, [line: 1], [:Example]},
-    [
-      do: {:def, [line: 2],
-       [
-         {:add, [line: 2], [{:x, [line: 2], nil}, {:y, [line: 2], nil}]},
-         [do: {:+, [line: 2], [{:x, [line: 2], nil}, {:y, [line: 2], nil}]}]
-       ]}
+    [ do:
+      {:def, [line: 2], [
+        {
+          :add, [line: 2], [
+            {:x, [line: 2], nil},
+            {:y, [line: 2], nil}
+          ]
+        },
+        [ do:
+            {:+, [line: 3], [
+              {:x, [line: 3], nil},
+              {:y, [line: 3], nil}
+            ]
+          }
+        ]
+      ]}
     ]
   ]
 }
 ```
 
 <!--
-Notes can also sync with clicks
-
-[click] This will be highlighted after the first click
-
-[click] Highlighted with `count = ref(0)`
-
-[click:3] Last click (skip two clicks)
+- Circling back to our example from before
+- You can see how Elixir's actual AST structure looks a little bit different
+- Each tuple has three elements, with the middle one being metadata for the node
+- When there's no more children, `nil` is used instead, and `do` blocks are
+defined as keyword lists
 -->
 
 ---
-transition: slide-up
-level: 2
+layout: section
 ---
 
-# Navigation
+# AST Traversal
 
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/ui#navigation-bar)
+<div class="flex flex-col">
+  <span v-click>Inspect Nodes</span>
+  <span v-click>Collect Information</span>
+  <span v-click>Apply Transformations</span>
+</div>
 
-## Keyboard Shortcuts
+---
+layout: default
+---
 
-|                                                     |                             |
-| --------------------------------------------------- | --------------------------- |
-| <kbd>right</kbd> / <kbd>space</kbd>                 | next animation or slide     |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd>                                       | previous slide              |
-| <kbd>down</kbd>                                     | next slide                  |
+# AST Traversal - Unsafe String To Atom
 
-<!-- https://sli.dev/guide/animations.html#click-animation -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-  alt=""
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
+<ul>
+    <li v-click>Leverage <code>Macro.prewalk/2</code> to traverse the AST</li>
+    <li v-click>Find calls to <code>String.to_atom/1</code></li>
+    <li v-click>Prints message when calls are found</li>
+</ul>
+
+---
+layout: default
+---
+
+# `Macro.prewalk/2`
+
+```elixir
+@doc """
+Performs a depth-first, pre-order traversal of quoted expressions.
+
+Returns a new AST where each node is the result of invoking `fun` on each
+corresponding node of `ast`.
+"""
+@spec prewalk(t, (t -> t)) :: t
+```
+
+<v-click>
+
+````md magic-move
+```elixir
+fn node -> IO.inspect(node) end
+```
+
+```elixir
+Macro.prewalk(ast, fn node -> IO.inspect(node) end)
+```
+
+```elixir
+Macro.prewalk(Code.string_to_quoted!(ast), fn node -> IO.inspect(node) end)
+```
+
+```elixir
+"""
+x + y
+"""
+|> Code.string_to_quoted!()
+|> Macro.prewalk(fn node -> IO.inspect(node) end)
+```
+
+```elixir
+"""
+x + y
+"""
+|> Code.string_to_quoted!()
+|> Macro.prewalk(fn node -> IO.inspect(node) end)
+
+# `IO.inspect/1` calls
+{:+, [line: 1], [{:x, [line: 1], nil}, {:y, [line: 1], nil}]}
+{:x, [line: 1], nil}
+{:y, [line: 1], nil}
+```
+
+```elixir
+"""
+x + y
+"""
+|> Code.string_to_quoted!()
+|> Macro.prewalk(fn node -> IO.inspect(node) end)
+
+# `IO.inspect/1` calls
+{:+, [line: 1], [{:x, [line: 1], nil}, {:y, [line: 1], nil}]}
+{:x, [line: 1], nil}
+{:y, [line: 1], nil}
+
+# Output
+{:+, [line: 1], [{:x, [line: 1], nil}, {:y, [line: 1], nil}]}
+```
+````
+
+</v-click>
+
+---
+layout: two-cols-header
+layoutClass: gap-4
+---
+
+# AST Traversal - Unsafe String To Atom
+
+::left::
+
+````md magic-move {at:2}
+```elixir
+Code.string_to_quoted!("""
+String.to_atom("ok")
+""")
+```
+```elixir
+fn node -> node end
+```
+```elixir
+fn
+  {:., _, _} = node ->
+    node
+
+  node ->
+     node
+end
+```
+```elixir
+fn
+  {:., _, [
+    {:__aliases__, _, [:String]},
+    :to_atom
+  ]} = node ->
+    IO.puts("Call Detected: String.to_atom/1 .")
+    node
+
+  node ->
+    node
+end
+```
+```elixir
+checker = fn
+  {:., _, [
+    {:__aliases__, _, [:String]},
+    :to_atom
+  ]} = node ->
+    IO.puts("Call Detected: String.to_atom/1 .")
+    node
+
+  node ->
+    node
+end
+
+"""
+String.to_atom("randomstring")
+"""
+|> Code.string_to_quoted!()
+|> Macro.prewalk(checker)
+```
+````
+
+::right::
+
+```elixir {all|2-9}{at:1}
+{
+  {
+    :.,
+    [line: 1],
+    [
+      {:__aliases__, [line: 1], [:String]},
+      :to_atom
+    ]
+  },
+  [line: 1],
+  ["ok"]
+}
+```
+
+<!--
+- Let's see the AST for a call to `String.to_atom/1`
+- Knowing the "shape" of the node allows us to pattern-match against it
+- With this information in mind, we can leverage `IO.puts/1` to print a message
+when a call to `String.to_atom/1` is detected.
+-->
+
+---
+layout: section
+---
+
+# Credo
+## Static Analysis through AST
 
 ---
 layout: two-cols
@@ -583,7 +878,7 @@ Learn more: [Mermaid Diagrams](https://sli.dev/features/mermaid) and [PlantUML D
 ---
 foo: bar
 dragPos:
-  square: 691,32,167,_,-16
+  square: 0,-6,0,0
 ---
 
 # Draggable Elements

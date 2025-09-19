@@ -2,6 +2,6 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: serif;
-  @apply color color-blue-600;
+  font-weight: 700;
+  @apply color-blue-600;
 }
