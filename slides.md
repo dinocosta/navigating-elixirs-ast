@@ -4,14 +4,8 @@ theme: default
 # like them? see https://unsplash.com/collections/94734566/slidev
 # background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
-title: Welcome to Slidev
-info: |
-  ## Slidev Starter Template
-  Presentation slides for developers.
-
-  Learn more at [Sli.dev](https://sli.dev)
-# apply unocss classes to the current slide
-class: text-center neversink-red-scheme
+title: Navigating Elixir's AST
+class: text-center
 # https://sli.dev/features/drawing
 drawings:
   persist: false
@@ -437,7 +431,208 @@ layout: section
 ---
 
 # Credo
-## Static Analysis through AST
+
+A static code analysis tool for the Elixir language with a focus on code consistency and teaching.
+
+---
+layout: default
+---
+
+# Credo - Defining Custom Check
+
+````md magic-move
+```elixir
+defmodule Credo.Check do
+  @moduledoc """
+  `Check` modules represent the checks which are run during Credo's analysis.
+  """
+
+  @callback run(source_file :: Credo.SourceFile.t(), params :: Keyword.t()) :: list(Credo.Issue.t())
+end
+```
+```elixir {1-7}
+defmodule Credo.SourceFile do
+  @moduledoc """
+  `SourceFile` structs represent a source file in the codebase.
+  """
+
+  @type t :: %__MODULE__{filename: nil | String.t(), hash: String.t(), status: :valid | :invalid | :timed_out}
+end
+
+defmodule Credo.Check do
+  @callback run(source_file :: Credo.SourceFile.t(), params :: Keyword.t()) :: list(Credo.Issue.t())
+end
+```
+```elixir {1-11}
+defmodule Credo.Issue do
+  @moduledoc """
+  `Issue` structs represent all issues found during the code analysis.
+  """
+
+  defstruct message: nil,
+            check: nil,
+            filename: nil,
+            line_no: nil,
+            ...
+end
+
+defmodule Credo.SourceFile do
+  @type t :: %__MODULE__{filename: nil | String.t(), hash: String.t(), status: :valid | :invalid | :timed_out}
+end
+
+defmodule Credo.Check do
+  @callback run(source_file :: Credo.SourceFile.t(), params :: Keyword.t()) :: list(Credo.Issue.t())
+end
+```
+```elixir
+defmodule Credo.Issue do
+  @moduledoc """
+  `Issue` structs represent all issues found during the code analysis.
+  """
+
+  defstruct message: nil,
+            check: nil,
+            filename: nil,
+            line_no: nil,
+            ...
+end
+
+defmodule Credo.SourceFile do
+  @type t :: %__MODULE__{filename: nil | String.t(), hash: String.t(), status: :valid | :invalid | :timed_out}
+end
+
+defmodule Credo.Check do
+  @callback run(source_file :: Credo.SourceFile.t(), params :: Keyword.t()) :: list(Credo.Issue.t())
+end
+```
+````
+
+<!--
+- Writing a custom check involves using `Credo.Check` and implementing the
+`run/2` function
+- The `run/2` function receives a `Credo.SourceFile` and is expected to return a
+list of `Credo.Issue` structs
+-->
+
+---
+layout: default
+---
+
+# Credo - Unsafe String To Atom
+
+````md magic-move
+```elixir
+defmodule Credo.Check do
+  @moduledoc """
+  `Check` modules represent the checks which are run during Credo's analysis.
+  """
+
+  @callback run(
+    source_file :: Credo.SourceFile.t(),
+    params :: Keyword.t()
+  ) :: list(Credo.Issue.t())
+end
+```
+```elixir
+defmodule Credo.Check.Warning.UnsafeToAtom do
+  use Credo.Check
+end
+```
+```elixir
+defmodule Credo.Check.Warning.UnsafeToAtom do
+  use Credo.Check
+
+  @impl true
+  def run(%SourceFile{} = source_file, params) do
+    issue_meta = IssueMeta.for(source_file, params)
+    Credo.Code.prewalk(source_file, &traverse(&1, &2, issue_meta))
+  end
+end
+```
+```elixir
+defmodule Credo.Check.Warning.UnsafeToAtom do
+  use Credo.Check
+
+  @impl true
+  def run(%SourceFile{} = source_file, params) do
+    issue_meta = IssueMeta.for(source_file, params)
+    Credo.Code.prewalk(source_file, &traverse(&1, &2, issue_meta))
+  end
+
+  defp traverse({{:., _loc, call}, meta, args} = ast, issues, issue_meta) do
+    case get_forbidden_call(call, args) do
+      {bad, suggestion, trigger} ->
+        {ast, issues_for_call(bad, suggestion, trigger, meta, issue_meta, issues)}
+
+      nil ->
+        {ast, issues}
+    end
+  end
+end
+```
+```elixir
+defmodule Credo.Check.Warning.UnsafeToAtom do
+  use Credo.Check, ...
+
+  @impl true
+  def run(%SourceFile{} = source_file, params) do
+    issue_meta = IssueMeta.for(source_file, params)
+    Credo.Code.prewalk(source_file, &traverse(&1, &2, issue_meta))
+  end
+
+  defp traverse({{:., _loc, call}, meta, args} = ast, issues, issue_meta) do
+    case get_forbidden_call(call, args) do
+      {bad, suggestion, trigger} ->
+        {ast, issues_for_call(bad, suggestion, trigger, meta, issue_meta, issues)}
+
+      nil ->
+        {ast, issues}
+    end
+  end
+
+  defp get_forbidden_call([{:__aliases__, _, [:String]}, :to_atom], [_]) do
+    {"String.to_atom/1", "String.to_existing_atom/1", "String.to_atom"}
+  end
+end
+```
+```elixir
+defmodule Credo.Check.Warning.UnsafeToAtom do
+  use Credo.Check, ...
+
+  @impl true
+  def run(%SourceFile{} = source_file, params) do
+    issue_meta = IssueMeta.for(source_file, params)
+    Credo.Code.prewalk(source_file, &traverse(&1, &2, issue_meta))
+  end
+
+  defp traverse({{:., _loc, call}, meta, args} = ast, issues, issue_meta) do
+    case get_forbidden_call(call, args) do
+      {bad, suggestion, trigger} ->
+        {ast, issues_for_call(bad, suggestion, trigger, meta, issue_meta, issues)}
+
+      nil ->
+        {ast, issues}
+    end
+  end
+
+  defp get_forbidden_call([{:__aliases__, _, [:String]}, :to_atom], [_]), do: ...
+  defp get_forbidden_call([{:__aliases__, _, [:List]}, :to_atom], [_]), do: ...
+  defp get_forbidden_call([:erlang, :binary_to_atom], [_, _]), do: ...
+end
+```
+````
+
+<!--
+- A lot of the source code has been removed for clarity, seeing as this serves
+only as an example to compare how Credo also leverages Elixir's AST to provide
+its functionalities
+- The `Credo.Code.prewalk/2` function can be used to traverse the AST of a
+`Credo.SourceFile`. It's a light wrapper around `Code.prewalk/2`, but it first
+handles converting the `Credo.SourceFile` struct to an AST.
+- The `issues_for_call` function simply adds another `Credo.Issue` function to
+the list of issues reported by this check, by leveraging `format_issue/3` with
+the provided information, which builds a `Credo.Issue` struct.
+-->
 
 ---
 layout: two-cols
