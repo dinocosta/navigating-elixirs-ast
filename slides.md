@@ -36,6 +36,13 @@ fonts:
     </a>
 </div>
 
+<style>
+a {
+    /* Remove the dashed border present in links. */
+    border-bottom: none;
+}
+</style>
+
 ---
 layout: section
 ---
@@ -449,6 +456,13 @@ A static code analysis tool for the Elixir language with a focus on code consist
     </a>
 </div>
 
+<style>
+a {
+    /* Remove the dashed border present in links. */
+    border-bottom: none;
+}
+</style>
+
 ---
 layout: default
 ---
@@ -844,6 +858,13 @@ Utilities to manipulate Elixir source code
     </a>
 </div>
 
+<style>
+a {
+    /* Remove the dashed border present in links. */
+    border-bottom: none;
+}
+</style>
+
 <!--
 - Sourceror builds on top of Elixir's AST
 - It introduces its own custom format, that is still compatible with Elixir's
@@ -1008,7 +1029,14 @@ layout: section
     <a href="https://github.com/dinocosta" target="_blank">
         <carbon-logo-github class="text-xl"/> dinocosta
     </a>
-    <a href="https://twitter.com/dinocosta_" target="_blank">
+    <a href="https://twitter.com/dinocosta_" target="_blank" class="border-">
         <carbon-logo-twitter class="text-xl"/> dinocosta_
     </a>
 </div>
+
+<style>
+a {
+    /* Remove the dashed border present in links. */
+    border-bottom: none;
+}
+</style>
