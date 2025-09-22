@@ -395,7 +395,7 @@ checker = fn
 end
 
 """
-String.to_atom("randomstring")
+String.to_atom("ok")
 """
 |> Code.string_to_quoted!()
 |> Macro.prewalk(checker)
@@ -635,524 +635,344 @@ the provided information, which builds a `Credo.Issue` struct.
 -->
 
 ---
-layout: two-cols
-layoutClass: gap-16
+layout: default
 ---
 
-# Table of contents
+# AST Traversal - Transformations
 
-You can use the `Toc` component to generate a table of contents for your slides:
-
-```html
-<Toc minDepth="1" maxDepth="1" />
-```
-
-The title will be inferred from your slide content, or you can override it with `title` and `level` in your frontmatter.
-
-::right::
-
-<Toc text-sm minDepth="1" maxDepth="2" />
+<ul>
+    <li v-click>Leverage <code>Macro.prewalk/2</code> to traverse the AST</li>
+    <li v-click>Find calls to <code>String.to_atom/1</code></li>
+    <li v-click>Replace with calls to <code>String.to_existing_atom/1</code></li>
+</ul>
 
 ---
-layout: image-right
-image: https://cover.sli.dev
+layout: two-cols-header
+layoutClass: gap-4
 ---
 
-# Code
+# AST Traversal - String To Atom Transformation
 
-Use code snippets and get the highlighting directly, and even types hover!
+::left::
 
-```ts [filename-example.ts] {all|4|6|6-7|9|all} twoslash
-// TwoSlash enables TypeScript hover information
-// and errors in markdown code blocks
-// More at https://shiki.style/packages/twoslash
-import { computed, ref } from 'vue'
-
-const count = ref(0)
-const doubled = computed(() => count.value * 2)
-
-doubled.value = 2
+````md magic-move
+```elixir
+Code.string_to_quoted!("""
+String.to_atom("ok")
+""")
 ```
-
-<arrow v-click="[4, 5]" x1="350" y1="310" x2="195" y2="342" color="#953" width="2" arrowSize="1" />
-
-<!-- This allow you to embed external code blocks -->
-<<< @/snippets/external.ts#snippet
-
-<!-- Footer -->
-
-[Learn more](https://sli.dev/features/line-highlighting)
-
-<!-- Inline style -->
-<style>
-.footnotes-sep {
-  @apply mt-5 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
-}
-</style>
-
-<!--
-Notes can also sync with clicks
-
-[click] This will be highlighted after the first click
-
-[click] Highlighted with `count = ref(0)`
-
-[click:3] Last click (skip two clicks)
--->
-
----
-level: 2
----
-
-# Shiki Magic Move
-
-Powered by [shiki-magic-move](https://shiki-magic-move.netlify.app/), Slidev supports animations across multiple code snippets.
-
-Add multiple code blocks and wrap them with <code>````md magic-move</code> (four backticks) to enable the magic move. For example:
-
-````md magic-move {lines: true}
-```ts {*|2|*}
-// step 1
-const author = reactive({
-  name: 'John Doe',
-  books: [
-    'Vue 2 - Advanced Guide',
-    'Vue 3 - Basic Guide',
-    'Vue 4 - The Mystery'
-  ]
-})
+```elixir
+fn node -> node end
 ```
+```elixir
+fn
+  {:., _, _} = node ->
+    node
 
-```ts {*|1-2|3-4|3-4,8}
-// step 2
-export default {
-  data() {
-    return {
-      author: {
-        name: 'John Doe',
-        books: [
-          'Vue 2 - Advanced Guide',
-          'Vue 3 - Basic Guide',
-          'Vue 4 - The Mystery'
-        ]
-      }
-    }
-  }
-}
+  node ->
+     node
+end
 ```
+```elixir
+fn
+  {:., call_meta, [
+    {:__aliases__, alias_meta, [:String]},
+    :to_atom
+  ]} = node ->
+    {:., call_meta, [
+      {:__aliases__, alias_meta, [:String]},
+      :to_existing_atom
+    ]}
 
-```ts
-// step 3
-export default {
-  data: () => ({
-    author: {
-      name: 'John Doe',
-      books: [
-        'Vue 2 - Advanced Guide',
-        'Vue 3 - Basic Guide',
-        'Vue 4 - The Mystery'
-      ]
-    }
-  })
-}
+  node ->
+    node
+end
 ```
+```elixir {4,8}
+fn
+  {:., call_meta, [
+    {:__aliases__, alias_meta, [:String]},
+    :to_atom
+  ]} = node ->
+    {:., call_meta, [
+      {:__aliases__, alias_meta, [:String]},
+      :to_existing_atom
+    ]}
 
-Non-code blocks are ignored.
+  node ->
+    node
+end
+```
+```elixir
+processor = fn
+  {:., call_meta, [
+    {:__aliases__, alias_meta, [:String]},
+    :to_atom
+  ]} = node ->
+    {:., call_meta, [
+      {:__aliases__, alias_meta, [:String]},
+      :to_existing_atom
+    ]}
 
-```vue
-<!-- step 4 -->
-<script setup>
-const author = {
-  name: 'John Doe',
-  books: [
-    'Vue 2 - Advanced Guide',
-    'Vue 3 - Basic Guide',
-    'Vue 4 - The Mystery'
-  ]
-}
-</script>
+  node ->
+    node
+end
+
+"""
+String.to_atom("ok")
+"""
+|> Code.string_to_quoted!()
+|> Macro.prewalk(processor)
+```
+```elixir
+processor = fn
+  {:., call_meta, [
+    {:__aliases__, alias_meta, [:String]},
+    :to_atom
+  ]} = node ->
+    {:., call_meta, [
+      {:__aliases__, alias_meta, [:String]},
+      :to_existing_atom
+    ]}
+
+  node ->
+    node
+end
+
+"""
+String.to_atom("ok")
+"""
+|> Code.string_to_quoted!()
+|> Macro.prewalk(processor)
+```
+```elixir {20}
+processor = fn
+  {:., call_meta, [
+    {:__aliases__, alias_meta, [:String]},
+    :to_atom
+  ]} = node ->
+    {:., call_meta, [
+      {:__aliases__, alias_meta, [:String]},
+      :to_existing_atom
+    ]}
+
+  node ->
+    node
+end
+
+"""
+String.to_atom("ok")
+"""
+|> Code.string_to_quoted!()
+|> Macro.prewalk(processor)
+|> Macro.to_string()
 ```
 ````
 
----
+::right::
 
-# Components
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
+````md magic-move {at:6}
+```elixir
+{
+  {
+    :.,
+    [line: 1],
+    [
+      {:__aliases__, [line: 1], [:String]},
+      :to_atom
+    ]
+  },
+  [line: 1],
+  ["ok"]
+}
 ```
-
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
-
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
-
-</div>
-<div>
-
-```html
-<Tweet id="1390115482657726468" />
+```elixir
+{
+  {
+    :.,
+    [line: 1],
+    [
+      {:__aliases__, [line: 1], [:String]},
+      :to_existing_atom
+    ]
+  },
+  [line: 1],
+  ["ok"]
+}
 ```
-
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
+```elixir
+String.to_existing_atom("ok")
+```
+````
 
 <!--
-Presenter note with **bold**, *italic*, and ~~striked~~ text.
-
-Also, HTML elements are valid:
-<div class="flex w-full">
-  <span style="flex-grow: 1;">Left content</span>
-  <span>Right content</span>
-</div>
+- Revisiting the AST for a call to `String.to_atom/1`
+- We can, once again, pattern-match against the specific node that performs the
+function call
+- Since we only need to change the function being called, we simply replace
+`:to_atom` with `:to_existing_atom`
+- This will update the resulting AST
+- We can then leverage `Macro.to_string/1` to conver the AST back to Elixir code
 -->
 
 ---
-class: px-20
+layout: section
 ---
 
-# Themes
+# Sourceror
 
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
+Utilities to manipulate Elixir source code
 
-<div grid="~ cols-2 gap-2" m="t-2">
+<!--
+- Sourceror builds on top of Elixir's AST
+- It introduces its own custom format, that is still compatible with Elixir's
+standard library, but that can be leveraged by Sourceror's function
+implementations
+-->
 
-```yaml
 ---
-theme: default
+layout: default
 ---
+
+# Sourceror - Why?
+
+<ul>
+    <li v-click>Comments – <code>Code.string_to_quoted_with_comments/1</code> introduces extra structure</li>
+    <li v-click>Zippers – Easier sibling navigation</li>
+    <li v-click>Patches - Range-based edits that preserve original formatting</li>
+</ul>
+
+<!--
+- Sourceror builds on top of Elixir's AST and it's a tool you'd reach out to in
+more special cases where you either need to preserve comments, easier navigation
+of the full AST or non-destructive edits
+- It introduces its own custom format, that is still compatible with Elixir's
+standard library, but that can be leveraged by Sourceror's function
+implementations
+- Souceror's Zippers offer a zipper data structure that makes it easier to
+navigate the AST, as it keeps track of the full context of where the user is in
+the node, allowing one to navigate to the parent node or children node very
+easily, something that is not so easy with something like `Macro.prewalk/3`
+-->
+
+---
+layout: two-cols-header
+layoutClass: gap-4
+---
+
+# Sourceror - Code With Comments
+
+::left::
+
+````md magic-move {at:1}
+```elixir
+Code.string_to_quoted_with_comments!("""
+# Should we replace this call?
+String.to_atom("ok")
+""")
 ```
-
-```yaml
----
-theme: seriph
----
-```
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true" alt="">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true" alt="">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/guide/theme-addon#use-theme) and
-check out the [Awesome Themes Gallery](https://sli.dev/resources/theme-gallery).
-
----
-
-# Clicks Animations
-
-You can add `v-click` to elements to add a click animation.
-
-<div v-click>
-
-This shows up when you click the slide:
-
-```html
-<div v-click>This shows up when you click the slide.</div>
-```
-
-</div>
-
-<br>
-
-<v-click>
-
-The <span v-mark.red="3"><code>v-mark</code> directive</span>
-also allows you to add
-<span v-mark.circle.orange="4">inline marks</span>
-, powered by [Rough Notation](https://roughnotation.com/):
-
-```html
-<span v-mark.underline.orange>inline markers</span>
-```
-
-</v-click>
-
-<div mt-20 v-click>
-
-[Learn more](https://sli.dev/guide/animations#click-animation)
-
-</div>
-
----
-
-# Motions
-
-Motion animations are powered by [@vueuse/motion](https://motion.vueuse.org/), triggered by `v-motion` directive.
-
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }"
-  :click-3="{ x: 80 }"
-  :leave="{ x: 1000 }"
->
-  Slidev
-</div>
-```
-
-<div class="w-60 relative">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-square.png"
-      alt=""
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-circle.png"
-      alt=""
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-triangle.png"
-      alt=""
-    />
-  </div>
-
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
-
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
-  }
+```elixir {all|2-9|10-18|all}
+{
+  {
+    {:., [line: 2], [
+      {:__aliases__, [line: 2], [:String]},
+      :to_atom
+    ]},
+    [line: 2],
+    ["ok"]
+  },
+  [
+    %{
+      line: 1,
+      text: "# Should we replace this call?",
+      column: 1,
+      next_eol_count: 1,
+      previous_eol_count: 1
+    }
+  ]
 }
-</script>
+```
+```elixir
+"""
+# Should we replace this call?
+String.to_atom("ok")
+"""
+|> Code.string_to_quoted!()
+|> Macro.to_string()
+```
+```elixir
+String.to_atom("ok")
+```
+````
 
-<div
-  v-motion
-  :initial="{ x:35, y: 30, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
+::right::
 
-[Learn more](https://sli.dev/guide/animations.html#motion)
+````md magic-move {at:1}
+```elixir
+Sourceror.parse_string!("""
+# Should we replace this call?
+String.to_atom("ok")
+""")
+```
+```elixir {all|all|all|6-21}
+{
+  {:., _, [
+    {:__aliases__, _, [:String]},
+    :to_atom
+  ]},
+  [
+    trailing_comments: [],
+    leading_comments: [
+      %{
+        line: 1,
+        text: "# Should we replace this call?",
+        column: 1,
+        next_eol_count: 1,
+        previous_eol_count: 1
+      }
+    ],
+    end_of_expression: [newlines: 1, line: 2, column: 21],
+    closing: [line: 2, column: 20],
+    line: 2,
+    column: 8
+  ],
+  [ {:__block__, _, ["ok"]} ]
+}
+```
+```elixir
+"""
+# Should we replace this call?
+String.to_atom("ok")
+"""
+|> Sourceror.parse_string!()
+|> Sourceror.to_string()
+```
+```elixir
+# Should we replace this call?
+String.to_atom("ok")
+```
+````
 
+<!--
+- Using `Code.string_to_quoted_with_comments/1` returns a two element tuple,
+with the first element being the AST, while the second is just the list of
+comments.
+- On the other hand, `Sourceror.parse_string!/1` returns a structure compatible
+with Elixir's AST, while also ensuring that the comments are preserved in the
+node's metadata.
+- Using `Sourceror.to_string/1` will correctly handle the comment metadata,
+ensuring that the comments are added back to the generated code, while using
+`Code.string_to_quoted` followed by `Macro.to_string` will remove any comments.
+-->
+
+---
+layout: section
+---
+
+# Conclusion
+
+<div class="flex flex-col">
+  <span v-click>AST enables powerful code analysis and transformation capabilities</span>
+  <span v-click>Tools like Credo and Sourceror build upon Elixir's AST foundations</span>
+  <span v-click>Understanding AST patterns unlocks advanced metaprogramming techniques</span>
 </div>
-
----
-
-# LaTeX
-
-LaTeX is supported out-of-box. Powered by [KaTeX](https://katex.org/).
-
-<div h-3 />
-
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-$$ {1|3|all}
-\begin{aligned}
-\nabla \cdot \vec{E} &= \frac{\rho}{\varepsilon_0} \\
-\nabla \cdot \vec{B} &= 0 \\
-\nabla \times \vec{E} &= -\frac{\partial\vec{B}}{\partial t} \\
-\nabla \times \vec{B} &= \mu_0\vec{J} + \mu_0\varepsilon_0\frac{\partial\vec{E}}{\partial t}
-\end{aligned}
-$$
-
-[Learn more](https://sli.dev/features/latex)
-
----
-
-# Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-4 gap-5 pt-4 -mb-6">
-
-```mermaid {scale: 0.5, alt: 'A simple sequence diagram'}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
-```
-
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
-
-```mermaid
-mindmap
-  root((mindmap))
-    Origins
-      Long history
-      ::icon(fa fa-book)
-      Popularisation
-        British popular psychology author Tony Buzan
-    Research
-      On effectiveness<br/>and features
-      On Automatic creation
-        Uses
-            Creative techniques
-            Strategic planning
-            Argument mapping
-    Tools
-      Pen and paper
-      Mermaid
-```
-
-```plantuml {scale: 0.7}
-@startuml
-
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
-
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
-
-cloud {
-  [Example 1]
-}
-
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
-
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
-@enduml
-```
-
-</div>
-
-Learn more: [Mermaid Diagrams](https://sli.dev/features/mermaid) and [PlantUML Diagrams](https://sli.dev/features/plantuml)
-
----
-foo: bar
-dragPos:
-  square: 0,-6,0,0
----
-
-# Draggable Elements
-
-Double-click on the draggable elements to edit their positions.
-
-<br>
-
-###### Directive Usage
-
-```md
-<img v-drag="'square'" src="https://sli.dev/logo.png">
-```
-
-<br>
-
-###### Component Usage
-
-```md
-<v-drag text-3xl>
-  <div class="i-carbon:arrow-up" />
-  Use the `v-drag` component to have a draggable container!
-</v-drag>
-```
-
-<v-drag pos="376,282,261,_,-15">
-  <div text-center text-3xl border border-main rounded>
-    Double-click me!
-  </div>
-</v-drag>
-
-<img v-drag="'square'" src="https://sli.dev/logo.png">
-
-###### Draggable Arrow
-
-```md
-<v-drag-arrow two-way />
-```
-
-<v-drag-arrow pos="138,335,332,-230" two-way op70 />
-
----
-src: ./pages/imported-slides.md
-hide: false
----
-
----
-
-# Monaco Editor
-
-Slidev provides built-in Monaco Editor support.
-
-Add `{monaco}` to the code block to turn it into an editor:
-
-```ts {monaco}
-import { ref } from 'vue'
-import { emptyArray } from './external'
-
-const arr = ref(emptyArray(10))
-```
-
-Use `{monaco-run}` to create an editor that can execute the code directly in the slide:
-
-```ts {monaco-run}
-import { version } from 'vue'
-import { emptyArray, sayHello } from './external'
-
-sayHello()
-console.log(`vue ${version}`)
-console.log(emptyArray<number>(10).reduce(fib => [...fib, fib.at(-1)! + fib.at(-2)!], [1, 1]))
-```
-
----
-layout: center
-class: text-center
----
-
-# Learn More
-
-[Documentation](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/resources/showcases)
-
-<PoweredBySlidev mt-10 />
