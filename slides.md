@@ -27,6 +27,15 @@ fonts:
 
 ## Credo and Sourceror's Building Blocks
 
+<div class="absolute bottom-8 left-0 w-full text-xl flex flex-col items-center">
+    <a href="https://github.com/dinocosta" target="_blank">
+        <carbon-logo-github class="text-xl"/> dinocosta
+    </a>
+    <a href="https://twitter.com/dinocosta_" target="_blank">
+        <carbon-logo-twitter class="text-xl"/> dinocosta_
+    </a>
+</div>
+
 ---
 layout: section
 ---
@@ -434,6 +443,12 @@ layout: section
 
 A static code analysis tool for the Elixir language with a focus on code consistency and teaching.
 
+<div class="absolute bottom-8 left-0 w-full text-xl flex flex-col items-center">
+    <a href="https://github.com/rrrene/credo" target="_blank">
+        <carbon-logo-github class="text-xl"/> rrrene/credo
+    </a>
+</div>
+
 ---
 layout: default
 ---
@@ -823,6 +838,12 @@ layout: section
 
 Utilities to manipulate Elixir source code
 
+<div class="absolute bottom-8 left-0 w-full text-xl flex flex-col items-center">
+    <a href="https://github.com/doorgan/sourceror" target="_blank">
+        <carbon-logo-github class="text-xl"/> doorgan/sourceror
+    </a>
+</div>
+
 <!--
 - Sourceror builds on top of Elixir's AST
 - It introduces its own custom format, that is still compatible with Elixir's
@@ -975,4 +996,19 @@ layout: section
   <span v-click>AST enables powerful code analysis and transformation capabilities</span>
   <span v-click>Tools like Credo and Sourceror build upon Elixir's AST foundations</span>
   <span v-click>Understanding AST patterns unlocks advanced metaprogramming techniques</span>
+</div>
+
+---
+layout: section
+---
+
+# Thanks!
+
+<div class="absolute bottom-8 left-0 w-full text-xl flex flex-col items-center">
+    <a href="https://github.com/dinocosta" target="_blank">
+        <carbon-logo-github class="text-xl"/> dinocosta
+    </a>
+    <a href="https://twitter.com/dinocosta_" target="_blank">
+        <carbon-logo-twitter class="text-xl"/> dinocosta_
+    </a>
 </div>
