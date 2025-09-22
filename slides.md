@@ -1,5 +1,5 @@
 ---
-theme: default
+theme: neversink
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
 # background: https://cover.sli.dev
@@ -19,41 +19,57 @@ seoMeta:
   ogImage: auto
   # ogImage: https://cover.sli.dev
 fonts:
-  sans-serif: 'Geist'
-  mono: 'Geist Mono'
+  sans: Geist
+  mono: Geist Mono
+layout: intro
+color: violet
+align: lm-lm
 ---
 
 # Navigating Elixir's AST
 
-## Credo and Sourceror's Building Blocks
+### Credo and Sourceror's Building Blocks
 
-<div class="absolute bottom-8 left-0 w-full text-xl flex flex-col items-center">
-    <a href="https://github.com/dinocosta" target="_blank">
+<div class="absolute bottom-8 left-0 w-full flex flex-col items-left">
+    <a href="https://github.com/dinocosta" target="_blank" class="pl-6">
         <carbon-logo-github class="text-xl"/> dinocosta
     </a>
-    <a href="https://twitter.com/dinocosta_" target="_blank">
+    <a href="https://twitter.com/dinocosta_" target="_blank" class="pl-6 hover:color-green">
         <carbon-logo-twitter class="text-xl"/> dinocosta_
     </a>
 </div>
 
 <style>
 a {
-    /* Remove the dashed border present in links. */
+    @apply color-violet-300;
     border-bottom: none;
+}
+
+a:hover {
+    border-bottom: none;
+    @apply color-violet-100;
 }
 </style>
 
 ---
-layout: section
+layout: side-title
+color: violet
+align: cm-lm
 ---
+
+::title::
 
 # What is an AST?
 
-<div class="flex flex-col">
-  <span v-click>Tree-Like Data Structure</span>
-  <span v-click>Represents the code's syntatic structure</span>
-  <span v-click>Each node can represent an operation, expression or statement</span>
-</div>
+::content::
+
+<v-clicks>
+
+- Tree-Like Data Structure
+- Represents the code's syntatic structure
+- Each node can represent an operation, expression or statement
+
+</v-clicks>
 
 <!--
 - The representation abstracts away specific syntax details, like punctutation or formatting
@@ -62,9 +78,15 @@ layout: section
 -->
 
 ---
-layout: two-cols
+layout: two-cols-title
 layoutClass: gap-4
 ---
+
+::title::
+
+<h1 class="color-violet">What is an AST?</h1>
+
+::left::
 
 ```elixir {all|1,5|1,5|2,4|2,4|2,4|3|3|all}{at:1}
 defmodule Example do
@@ -171,49 +193,54 @@ end
 -->
 
 ---
-layout: section
+layout: side-title
+color: violet
+align: cm-lm
 ---
+
+::title::
 
 # Elixir's AST
 
-<div class="flex flex-col">
-  <span class="flex gap-4 justify-center">
-    <code v-click class="color-blue-600">Code</code>
-    <code v-click class="color-blue-600">Macro</code>
-  </span>
-</div>
+::content::
 
----
-layout: default
----
+<h2 v-click><code>Code</code></h2>
 
-# Elixir's AST
-
-<div>
-<p><code class="color-blue-600">Code</code></p>
 <ul>
-    <li v-click><code>Code.string_to_quoted/1</code> → String to AST</li>
-    <li v-click><code>Code.eval_string/1</code> → Execute Elixir code</li>
-    <li v-click><code>Code.eval_quoted/1</code> → Execute AST</li>
+    <li v-click><code>Code.string_to_quoted/1</code></li>
+    <li v-click><code>Code.eval_string/1</code></li>
+    <li v-click><code>Code.eval_quoted/1</code></li>
 </ul>
-<p v-click><code class="color-blue-600">Macro</code></p>
+
+
+<h2 v-click><code>Macro</code></h2>
+
 <ul>
-    <li v-click><code>Macro.to_string/1</code> → AST to String</li>
-    <li v-click><code>Macro.prewalk/2</code> → Traverse AST</li>
+    <li v-click><code>Macro.to_string/1</code></li>
+    <li v-click><code>Macro.prewalk/2</code></li>
 </ul>
-</div>
 
 <!--
 - Elixir's standard library provides multiple functions in both the `Macro` and
 `Code` modules that make it easier to work with Elixir's AST.
 -->
 
+<style>
+h2 > code {
+    @apply color-violet;
+    @apply bg-violet-100;
+}
+</style>
+
+
 ---
-layout: two-cols-header
+layout: two-cols-title
 layoutClass: gap-4
 ---
 
-# `Code.string_to_quoted/1`
+::title::
+
+<h1><code>Code.string_to_quoted/1</code></h1>
 
 ::left::
 
@@ -254,6 +281,13 @@ end
 }
 ```
 
+<style>
+h1 > code {
+    @apply color-violet;
+    @apply bg-violet-100;
+}
+</style>
+
 <!--
 - Circling back to our example from before
 - You can see how Elixir's actual AST structure looks a little bit different
@@ -263,34 +297,52 @@ defined as keyword lists
 -->
 
 ---
-layout: section
+layout: side-title
+color: violet
+align: cm-lm
 ---
+
+::title::
 
 # AST Traversal
 
-<div class="flex flex-col">
-  <span v-click>Inspect Nodes</span>
-  <span v-click>Collect Information</span>
-  <span v-click>Apply Transformations</span>
-</div>
+::content::
+
+<v-clicks>
+
+- Inspect Nodes
+- Collect Information
+- Apply Transformations
+
+</v-clicks>
+
+---
+layout: side-title
+color: violet
+align: cm-lm
+---
+
+::title::
+
+# AST Traversal
+
+## Unsafe String To ATom
+
+::content::
+
+<v-clicks>
+
+- Leverage `Macro.prewalk/2` to traverse the AST
+- Find calls to `String.to_atom/1`
+- Prints message when calls are found
+
+</v-clicks>
 
 ---
 layout: default
 ---
 
-# AST Traversal - Unsafe String To Atom
-
-<ul>
-    <li v-click>Leverage <code>Macro.prewalk/2</code> to traverse the AST</li>
-    <li v-click>Find calls to <code>String.to_atom/1</code></li>
-    <li v-click>Prints message when calls are found</li>
-</ul>
-
----
-layout: default
----
-
-# `Macro.prewalk/2`
+<h1><code>Macro.prewalk/2</code></h1>
 
 ```elixir
 @doc """
@@ -357,12 +409,23 @@ x + y
 
 </v-click>
 
+<style>
+h1 > code {
+    @apply color-violet;
+    @apply bg-violet-100;
+}
+</style>
+
 ---
-layout: two-cols-header
-layoutClass: gap-4
+layout: two-cols-title
 ---
 
-# AST Traversal - Unsafe String To Atom
+::title::
+
+<div class="flex w-full">
+    <h1 class="color-violet grow">AST Traversal</h1>
+    <h1 class="color-gray text-right">Unsafe String To Atom</h1>
+</div>
 
 ::left::
 
@@ -444,6 +507,7 @@ when a call to `String.to_atom/1` is detected.
 
 ---
 layout: section
+color: violet
 ---
 
 # Credo
@@ -458,8 +522,13 @@ A static code analysis tool for the Elixir language with a focus on code consist
 
 <style>
 a {
-    /* Remove the dashed border present in links. */
+    @apply color-violet-300;
     border-bottom: none;
+}
+
+a:hover {
+    border-bottom: none;
+    @apply color-violet-100;
 }
 </style>
 
@@ -467,7 +536,10 @@ a {
 layout: default
 ---
 
-# Credo - Defining Custom Check
+<div class="flex w-full">
+    <h1 class="color-violet grow">Credo</h1>
+    <h1 class="color-gray text-right">Custom Check</h1>
+</div>
 
 ````md magic-move
 ```elixir
@@ -547,7 +619,10 @@ list of `Credo.Issue` structs
 layout: default
 ---
 
-# Credo - Unsafe String To Atom
+<div class="flex w-full">
+    <h1 class="color-violet grow">Credo</h1>
+    <h1 class="color-gray text-right">Unsafe String To Atom</h1>
+</div>
 
 ````md magic-move
 ```elixir
@@ -664,23 +739,38 @@ the provided information, which builds a `Credo.Issue` struct.
 -->
 
 ---
-layout: default
+layout: side-title
+color: violet
+align: cm-lm
 ---
 
-# AST Traversal - Transformations
+::title::
 
-<ul>
-    <li v-click>Leverage <code>Macro.prewalk/2</code> to traverse the AST</li>
-    <li v-click>Find calls to <code>String.to_atom/1</code></li>
-    <li v-click>Replace with calls to <code>String.to_existing_atom/1</code></li>
-</ul>
+# AST Traversal
+
+## Transformations
+
+::content::
+
+<v-clicks>
+
+- Leverage `Macro.prewalk/2` to traverse the AST
+- Find calls to `String.to_atom/1`
+- Replace with calls to `String.to_existing_atom/1`
+
+</v-clicks>
 
 ---
-layout: two-cols-header
+layout: two-cols-title
 layoutClass: gap-4
 ---
 
-# AST Traversal - String To Atom Transformation
+::title::
+
+<div class="flex w-full">
+    <h1 class="color-violet grow">AST Traversal</h1>
+    <h1 class="color-gray text-right">String To Atom Transformation</h1>
+</div>
 
 ::left::
 
@@ -846,6 +936,7 @@ function call
 
 ---
 layout: section
+color: violet
 ---
 
 # Sourceror
@@ -860,8 +951,13 @@ Utilities to manipulate Elixir source code
 
 <style>
 a {
-    /* Remove the dashed border present in links. */
+    @apply color-violet-300;
     border-bottom: none;
+}
+
+a:hover {
+    border-bottom: none;
+    @apply color-violet-100;
 }
 </style>
 
@@ -873,16 +969,24 @@ implementations
 -->
 
 ---
-layout: default
+layout: side-title
+color: violet
+align: cm-lm
 ---
 
-# Sourceror - Why?
+::title::
 
-<ul>
-    <li v-click>Comments – <code>Code.string_to_quoted_with_comments/1</code> introduces extra structure</li>
-    <li v-click>Zippers – Easier sibling navigation</li>
-    <li v-click>Patches - Range-based edits that preserve original formatting</li>
-</ul>
+# Sourceror
+
+::content::
+
+<v-clicks>
+
+- Comments – `Code.string_to_quoted_with_comments/1` introduces extra structure
+- Zippers – Easier navigation
+- Patches - Range-based edits that preserve original formatting
+
+</v-clicks>
 
 <!--
 - Sourceror builds on top of Elixir's AST and it's a tool you'd reach out to in
@@ -898,11 +1002,15 @@ easily, something that is not so easy with something like `Macro.prewalk/3`
 -->
 
 ---
-layout: two-cols-header
-layoutClass: gap-4
+layout: two-cols-title
 ---
 
-# Sourceror - Code With Comments
+::title::
+
+<div class="flex w-full">
+    <h1 class="color-violet grow">Sourceror</h1>
+    <h1 class="color-gray text-right">Code With Comments</h1>
+</div>
 
 ::left::
 
@@ -1008,22 +1116,31 @@ ensuring that the comments are added back to the generated code, while using
 -->
 
 ---
-layout: section
+layout: side-title
+color: violet
+align: cm-lm
 ---
+
+::title::
 
 # Conclusion
 
-<div class="flex flex-col">
-  <span v-click>AST enables powerful code analysis and transformation capabilities</span>
-  <span v-click>Tools like Credo and Sourceror build upon Elixir's AST foundations</span>
-  <span v-click>Understanding AST patterns unlocks advanced metaprogramming techniques</span>
-</div>
+::content::
+
+<v-clicks>
+
+- AST enables powerful code analysis and transformation capabilities
+- Tools like Credo and Sourceror build upon Elixir's AST foundations
+- Understanding AST patterns unlocks advanced metaprogramming techniques
+
+</v-clicks>
 
 ---
 layout: section
+color: violet
 ---
 
-# Thanks!
+<h1 class="text-center">Thanks!</h1>
 
 <div class="absolute bottom-8 left-0 w-full text-xl flex flex-col items-center">
     <a href="https://github.com/dinocosta" target="_blank">
@@ -1036,7 +1153,12 @@ layout: section
 
 <style>
 a {
-    /* Remove the dashed border present in links. */
+    @apply color-violet-300;
     border-bottom: none;
+}
+
+a:hover {
+    border-bottom: none;
+    @apply color-violet-100;
 }
 </style>
