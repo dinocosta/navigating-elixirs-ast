@@ -17,3 +17,7 @@ footer > div {
    */
   display: none;
 }
+
+li {
+  list-style-type: disc;
+}
