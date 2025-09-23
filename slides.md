@@ -324,9 +324,10 @@ align: cm-lm
 
 ::title::
 
-# AST Traversal
-
-## Unsafe String To ATom
+<div class="flex flex-col gap-4">
+    <h1>AST Traversal</h1>
+    <h2>Unsafe String To ATom</h2>
+</div>
 
 ::content::
 
@@ -512,7 +513,7 @@ color: violet
 
 # Credo
 
-A static code analysis tool for the Elixir language with a focus on code consistency and teaching.
+#### A static code analysis tool for the Elixir language with a focus on code consistency and teaching.
 
 <div class="absolute bottom-8 left-0 w-full text-xl flex flex-col items-center">
     <a href="https://github.com/rrrene/credo" target="_blank">
@@ -746,9 +747,10 @@ align: cm-lm
 
 ::title::
 
-# AST Traversal
-
-## Transformations
+<div class="flex flex-col gap-4">
+    <h1>AST Traversal</h1>
+    <h2>Transformations</h2>
+</div>
 
 ::content::
 
@@ -941,7 +943,7 @@ color: violet
 
 # Sourceror
 
-Utilities to manipulate Elixir source code
+#### Utilities to manipulate Elixir source code
 
 <div class="absolute bottom-8 left-0 w-full text-xl flex flex-col items-center">
     <a href="https://github.com/doorgan/sourceror" target="_blank">

@@ -1,15 +1,14 @@
 h1,
 h2,
-h3,
-h4 {
+h3 {
   font-weight: 700;
 }
 
 :root {
-  --neversink-title-font: sans-serif;
-  --neversink-main-font: sans-serif;
-  --neversink-mono-font: monospace;
-  --neversink-quote-font: monospace;
+  --neversink-title-font: "Geist", sans-serif;
+  --neversink-main-font: "Geist", sans-serif;
+  --neversink-mono-font: "Geist Mono";
+  --neversink-quote-font: "Geist Mono";
 }
 
 footer > div {
