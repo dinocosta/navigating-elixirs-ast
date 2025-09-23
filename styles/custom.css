@@ -5,9 +5,9 @@ h3 {
 }
 
 :root {
-  --neversink-title-font: "Geist", sans-serif;
-  --neversink-main-font: "Geist", sans-serif;
-  --neversink-mono-font: "Geist Mono";
+  --neversink-title-font: "Space Mono", sans-serif;
+  --neversink-main-font: "Inter", sans-serif;
+  --neversink-mono-font: "Space Mono";
   --neversink-quote-font: "Geist Mono";
 }
 

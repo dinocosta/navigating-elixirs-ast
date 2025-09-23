@@ -19,8 +19,8 @@ seoMeta:
   ogImage: auto
   # ogImage: https://cover.sli.dev
 fonts:
-  sans: Geist
-  mono: Geist Mono
+  sans: 'Inter, Space Mono'
+  mono: Space Mono
 layout: intro
 color: violet
 align: lm-lm
@@ -28,7 +28,7 @@ align: lm-lm
 
 # Navigating Elixir's AST
 
-### Credo and Sourceror's Building Blocks
+<h3 style="font-family: 'Inter'; font-weight: 300;">Credo and Sourceror's Building Blocks</h3>
 
 <div class="absolute bottom-8 left-0 w-full flex flex-col items-left">
     <a href="https://github.com/dinocosta" target="_blank" class="pl-6">
@@ -48,6 +48,7 @@ a {
 a:hover {
     border-bottom: none;
     @apply color-violet-100;
+
 }
 </style>
 
@@ -240,7 +241,10 @@ layoutClass: gap-4
 
 ::title::
 
-<h1><code>Code.string_to_quoted/1</code></h1>
+<div class="flex w-full items-end">
+    <h1 class="color-violet grow">AST Traversal</h1>
+    <p class="text-right"><code>Code.string_to_quoted/1</code></p>
+</div>
 
 ::left::
 
@@ -282,7 +286,7 @@ end
 ```
 
 <style>
-h1 > code {
+div > p > code {
     @apply color-violet;
     @apply bg-violet-100;
 }
@@ -326,7 +330,7 @@ align: cm-lm
 
 <div class="flex flex-col gap-4">
     <h1>AST Traversal</h1>
-    <h2>Unsafe String To ATom</h2>
+    <h3 style="font-family: 'Inter'; font-weight: 300">Unsafe String To ATom</h3>
 </div>
 
 ::content::
@@ -343,7 +347,10 @@ align: cm-lm
 layout: default
 ---
 
-<h1><code>Macro.prewalk/2</code></h1>
+<div class="flex w-full items-end">
+    <h1 class="color-violet grow">AST Traversal</h1>
+    <p class="text-right"><code>Macro.prewalk/2</code></p>
+</div>
 
 ```elixir
 @doc """
@@ -411,7 +418,7 @@ x + y
 </v-click>
 
 <style>
-h1 > code {
+div > p > code {
     @apply color-violet;
     @apply bg-violet-100;
 }
@@ -423,9 +430,9 @@ layout: two-cols-title
 
 ::title::
 
-<div class="flex w-full">
+<div class="flex w-full items-end">
     <h1 class="color-violet grow">AST Traversal</h1>
-    <h1 class="color-gray text-right">Unsafe String To Atom</h1>
+    <p class="color-gray text-right">Unsafe String To Atom</p>
 </div>
 
 ::left::
@@ -531,15 +538,20 @@ a:hover {
     border-bottom: none;
     @apply color-violet-100;
 }
+
+h4 {
+    font-family: 'Inter';
+    font-weight: 300;
+}
 </style>
 
 ---
 layout: default
 ---
 
-<div class="flex w-full">
+<div class="flex w-full items-center">
     <h1 class="color-violet grow">Credo</h1>
-    <h1 class="color-gray text-right">Custom Check</h1>
+    <p class="color-gray text-right">Custom Check</p>
 </div>
 
 ````md magic-move
@@ -620,9 +632,9 @@ list of `Credo.Issue` structs
 layout: default
 ---
 
-<div class="flex w-full">
+<div class="flex w-full items-center">
     <h1 class="color-violet grow">Credo</h1>
-    <h1 class="color-gray text-right">Unsafe String To Atom</h1>
+    <p class="color-gray text-right">Unsafe String To Atom</p>
 </div>
 
 ````md magic-move
@@ -749,7 +761,7 @@ align: cm-lm
 
 <div class="flex flex-col gap-4">
     <h1>AST Traversal</h1>
-    <h2>Transformations</h2>
+    <h3 style="font-family: 'Inter'; font-weight: 300">Transformations</h3>
 </div>
 
 ::content::
@@ -769,9 +781,9 @@ layoutClass: gap-4
 
 ::title::
 
-<div class="flex w-full">
+<div class="flex w-full items-end">
     <h1 class="color-violet grow">AST Traversal</h1>
-    <h1 class="color-gray text-right">String To Atom Transformation</h1>
+    <p class="color-gray text-right">String To Atom Transformation</p>
 </div>
 
 ::left::
@@ -961,6 +973,11 @@ a:hover {
     border-bottom: none;
     @apply color-violet-100;
 }
+
+h4 {
+    font-family: 'Inter';
+    font-weight: 300;
+}
 </style>
 
 <!--
@@ -1009,10 +1026,11 @@ layout: two-cols-title
 
 ::title::
 
-<div class="flex w-full">
+<div class="flex w-full items-end">
     <h1 class="color-violet grow">Sourceror</h1>
-    <h1 class="color-gray text-right">Code With Comments</h1>
+    <p class="color-gray text-right">Code With Comments</p>
 </div>
+
 
 ::left::
 
