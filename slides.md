@@ -207,24 +207,43 @@ align: cm-lm
 
 <h2 v-click><code>Code</code></h2>
 
-<ul>
-    <li v-click><code>Code.string_to_quoted/1</code></li>
-    <li v-click><code>Code.eval_string/1</code></li>
-    <li v-click><code>Code.eval_quoted/1</code></li>
+<ul v-click="2">
+    <li><code>Code.string_to_quoted/1</code></li>
 </ul>
 
+<v-click at="2">
+```elixir
+Code.string_to_quoted("1 + 1")
 
-<h2 v-click><code>Macro</code></h2>
+{:ok, {:+, [line: 1], [1, 1]}}
+```
+</v-click>
 
-<ul>
-    <li v-click><code>Macro.to_string/1</code></li>
-    <li v-click><code>Macro.prewalk/2</code></li>
+<ul v-click="3">
+    <li><code>Code.eval_string/1</code></li>
 </ul>
 
-<!--
-- Elixir's standard library provides multiple functions in both the `Macro` and
-`Code` modules that make it easier to work with Elixir's AST.
--->
+<v-click at="3">
+```elixir
+Code.eval_string("1 + 1")
+
+{2, []}
+```
+</v-click>
+
+<ul v-click="4">
+    <li><code>Code.eval_quoted/1</code></li>
+</ul>
+
+<v-click at="4">
+```elixir
+"1 + 1"
+|> Code.string_to_quoted!()
+|> Code.eval_quoted()
+
+{2, []}
+```
+</v-click>
 
 <style>
 h2 > code {
@@ -233,6 +252,73 @@ h2 > code {
 }
 </style>
 
+<!--
+- Elixir's standard library provides multiple functions in both the `Macro` and
+`Code` modules that make it easier to work with Elixir's AST.
+
+- `Code.string_to_quoted/1` – Convert string to AST
+- `Code.eval_string/1` – Evaluate string of Elixir code
+- `Code.eval_quoted/1` – Evaluate AST
+-->
+
+---
+layout: side-title
+color: violet
+align: cm-lm
+---
+
+::title::
+
+# Elixir's AST
+
+::content::
+
+<h2 v-click><code>Macro</code></h2>
+
+<ul v-click="2">
+    <li><code>Macro.to_string/1</code></li>
+</ul>
+
+<v-click at="2">
+```elixir
+Macro.to_string({:+, [line: 1], [1, 1]}})
+
+"1 + 1"
+```
+</v-click>
+
+<ul v-click="3">
+    <li><code>Macro.prewalk/2</code></li>
+</ul>
+
+<v-click at="3">
+```elixir
+Macro.prewalk({:+, [line: 1], [1, 1]}}, &IO.inspect/1)
+
+# Outputs
+{:+, [line: 1], [1, 1]}
+1
+1
+
+# Returns
+{:+, [line: 1], [1, 1]}
+```
+</v-click>
+
+<style>
+h2 > code {
+    @apply color-violet;
+    @apply bg-violet-100;
+}
+</style>
+
+<!--
+- Elixir's standard library provides multiple functions in both the `Macro` and
+`Code` modules that make it easier to work with Elixir's AST.
+
+- `Macro.to_string/1` – Convert AST to String
+- `Macro.prewalk/2` – Traverse AST and apply function to each node
+-->
 
 ---
 layout: two-cols-title
@@ -241,8 +327,8 @@ layoutClass: gap-4
 
 ::title::
 
-<div class="flex w-full items-end">
-    <h1 class="color-violet grow">AST Traversal</h1>
+<div class="flex w-full items-center">
+    <h1 class="color-violet grow">Elixir's AST</h1>
     <p class="text-right"><code>Code.string_to_quoted/1</code></p>
 </div>
 
@@ -330,7 +416,7 @@ align: cm-lm
 
 <div class="flex flex-col gap-4">
     <h1>AST Traversal</h1>
-    <h3 style="font-family: 'Inter'; font-weight: 300">Unsafe String To ATom</h3>
+    <h3 style="font-family: 'Inter'; font-weight: 300">Unsafe String To Atom</h3>
 </div>
 
 ::content::
@@ -343,11 +429,16 @@ align: cm-lm
 
 </v-clicks>
 
+<!--
+- The Erlang Virtual Machine has a maximum number of atoms of 1_048_576 .
+- Calling `String.to_atom/1` can lead to memory exhaustion, killing the VM.
+-->
+
 ---
 layout: default
 ---
 
-<div class="flex w-full items-end">
+<div class="flex w-full items-center">
     <h1 class="color-violet grow">AST Traversal</h1>
     <p class="text-right"><code>Macro.prewalk/2</code></p>
 </div>
@@ -374,7 +465,7 @@ Macro.prewalk(ast, fn node -> IO.inspect(node) end)
 ```
 
 ```elixir
-Macro.prewalk(Code.string_to_quoted!(ast), fn node -> IO.inspect(node) end)
+Macro.prewalk(Code.string_to_quoted!(code), fn node -> IO.inspect(node) end)
 ```
 
 ```elixir
@@ -430,7 +521,7 @@ layout: two-cols-title
 
 ::title::
 
-<div class="flex w-full items-end">
+<div class="flex w-full items-center">
     <h1 class="color-violet grow">AST Traversal</h1>
     <p class="color-gray text-right">Unsafe String To Atom</p>
 </div>
@@ -509,6 +600,7 @@ String.to_atom("ok")
 <!--
 - Let's see the AST for a call to `String.to_atom/1`
 - Knowing the "shape" of the node allows us to pattern-match against it
+- The `:.` node represents a remote function call or dot call.
 - With this information in mind, we can leverage `IO.puts/1` to print a message
 when a call to `String.to_atom/1` is detected.
 -->
@@ -774,6 +866,13 @@ align: cm-lm
 
 </v-clicks>
 
+<!--
+- We can leverage `Macro.prewalk/2` again, modifying the node instead of simply
+returning it.
+- The call to `String.to_existing_atom/1` will raise an exception if the atom
+does not exist.
+-->
+
 ---
 layout: two-cols-title
 layoutClass: gap-4
@@ -781,7 +880,7 @@ layoutClass: gap-4
 
 ::title::
 
-<div class="flex w-full items-end">
+<div class="flex w-full items-center">
     <h1 class="color-violet grow">AST Traversal</h1>
     <p class="color-gray text-right">String To Atom Transformation</p>
 </div>
@@ -1003,7 +1102,7 @@ align: cm-lm
 
 - Comments – `Code.string_to_quoted_with_comments/1` introduces extra structure
 - Zippers – Easier navigation
-- Patches - Range-based edits that preserve original formatting
+- Patches – Range-based edits that preserve original formatting
 
 </v-clicks>
 
@@ -1026,7 +1125,7 @@ layout: two-cols-title
 
 ::title::
 
-<div class="flex w-full items-end">
+<div class="flex w-full items-center">
     <h1 class="color-violet grow">Sourceror</h1>
     <p class="color-gray text-right">Code With Comments</p>
 </div>
@@ -1182,3 +1281,18 @@ a:hover {
     @apply color-violet-100;
 }
 </style>
+
+<!--
+**How to avoid false positives?**
+Use `Macro.expand/1` in order to understand if the `:__aliases__` node is
+actually a call to `Elixir.String` and not some other module.
+
+**When to use `Macro.prewalk/2` vs `Macro.postwalk/2`?**
+`Macro.postwalk/2` can help when your transformation requires recursive function
+calls, otherwise you might end up in an infinite loop.
+
+**How to integrate in an existing codebase?**
+- For static code analysis, just use Credo.
+- For code transformation, possibly create a new mix task and either leverage
+the standard library or Sourceror.
+-->
