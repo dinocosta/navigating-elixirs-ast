@@ -79,17 +79,15 @@ align: cm-lm
 -->
 
 ---
-layout: two-cols-title
-layoutClass: gap-4
+layout: image-right
+image: /ast_1.png
+backgroundSize: 28em
+transition: fade
 ---
-
-::title::
 
 <h1 class="color-violet">What is an AST?</h1>
 
-::left::
-
-```elixir {all|1,5|1,5|2,4|2,4|2,4|3|3|all}{at:1}
+```elixir
 defmodule Example do
   def add(x, y) do
     x + y
@@ -97,101 +95,61 @@ defmodule Example do
 end
 ```
 
-::right::
-
-````md magic-move {lines:false}
-```elixir
-@type ast :: node
-@type node :: {atom, [node]}
-```
-```elixir
-@type ast :: node
-@type node :: {atom, [node]}
-
-{:defmodule, []}
-```
-```elixir
-@type ast :: node
-@type node :: {atom, [node]}
-
-{:defmodule, [
-  {:Example, []}
-]}
-```
-```elixir
-@type ast :: node
-@type node :: {atom, [node]}
-
-{:defmodule, [
-  {:Example, []},
-  {:def, []}
-]}
-```
-```elixir
-@type ast :: node
-@type node :: {atom, [node]}
-
-{:defmodule, [
-  {:Example, []},
-  {:def, [
-    {:add, []}
-  ]}
-]}
-```
-```elixir
-@type ast :: node
-@type node :: {atom, [node]}
-
-{:defmodule, [
-  {:Example, []},
-  {:def, [
-    {:add, [
-      {:x, []}
-      {:y, []}
-    ]}
-  ]}
-]}
-```
-```elixir
-@type ast :: node
-@type node :: {atom, [node]}
-
-{:defmodule, [
-  {:Example, []},
-  {:def, [
-    {:add, [
-      {:x, []}
-      {:y, []}
-    ]},
-    {:+, []}
-  ]}
-]}
-```
-```elixir
-@type ast :: node
-@type node :: {atom, [node]}
-
-{:defmodule, [
-  {:Example, []},
-  {:def, [
-    {:add, [
-      {:x, []}
-      {:y, []}
-    ]},
-    {:+, [
-      {:x, []},
-      {:y, []}
-    ]}
-  ]}
-]}
-```
-````
-
 <!--
 - Take this piece of Elixir code as an example
 - Provides a structure that makes it easier to analyze and manipulate code programmatically
 - Helpful in compilting, interpreting and static code analysis
 -->
+
+---
+layout: image-right
+image: /ast_2.png
+backgroundSize: 28em
+transition: fade
+---
+
+<h1 class="color-violet">What is an AST?</h1>
+
+```elixir {1,5}
+defmodule Example do
+  def add(x, y) do
+    x + y
+  end
+end
+```
+
+---
+layout: image-right
+image: /ast_3.png
+backgroundSize: 28em
+transition: fade
+---
+
+<h1 class="color-violet">What is an AST?</h1>
+
+```elixir {2,4}
+defmodule Example do
+  def add(x, y) do
+    x + y
+  end
+end
+```
+
+---
+layout: image-right
+image: /ast_4.png
+backgroundSize: 28em
+---
+
+<h1 class="color-violet">What is an AST?</h1>
+
+```elixir {3}
+defmodule Example do
+  def add(x, y) do
+    x + y
+  end
+end
+```
 
 ---
 layout: side-title
@@ -1248,11 +1206,23 @@ align: cm-lm
 
 <v-clicks>
 
-- AST enables powerful code analysis and transformation capabilities
-- Tools like Credo and Sourceror build upon Elixir's AST foundations
-- Understanding AST patterns unlocks advanced metaprogramming techniques
+- Static Code Analysis
+- Code Manipulation
+- Credo & Sourceror
+- Going Further
+   - Meta-Programming
+   - Quote & Unquote
+   - Macros
 
 </v-clicks>
+
+<!--
+- Elixir's AST empowers developers to perform static code analysis on Elixir code,
+while also allowing for code transformations to be performed, be it renaming
+functions, rewriting function calls, removing arguments, etc.
+- Credo and Sourceror simplify or improve some of these existing mechanisms,
+making it even easier for developers to tap into the power of Elixir's AST
+-->
 
 ---
 layout: section
